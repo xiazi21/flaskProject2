@@ -26,8 +26,9 @@ class people:
         self.index = index  # index of male or female
         self.sex = sex  # male or female
         self.engaged = []  # engaged with who
-        self.preference = preferenceGen(num)
-        self.originalPreference = self.preference
+        tmp = preferenceGen(num)
+        self.preference = tmp
+        self.originalPreference = 'is ' + str(tmp)
 
     def isFree(self):
         if self.engaged == [] and self.preference != []:
@@ -180,6 +181,7 @@ def superMatchMain(num):
             return None
         if object_local.isEveryoneEngaged():
             return object_local
+
     return object_local
 
 
@@ -188,11 +190,11 @@ def hello_world():  # put application's code here
     n = 1
     if request.method == 'GET':
         n = request.args.get('input1')
-        #print(n)
         if n != None:
             n = int(n)
             result = []
             data1 = superMatchMain(n)
+
             if data1 == None:
                 return render_template("main.html", data=None, dataObj=data1)
             else:
@@ -206,7 +208,5 @@ def hello_world():  # put application's code here
         return render_template("main.html")
 
 
-
 if __name__ == '__main__':
     app.run()
-

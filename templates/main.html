@@ -27,6 +27,7 @@
 <div id="mynetwork"></div>
 <h2 id="eventSpanHeading"></h2>
 <pre id="eventSpanContent"></pre>
+<pre id="eventSpanContent2"></pre>
 <p>the left is man and right is woman</p>
 {% if data != None %}
     {% for ele in data %}
@@ -69,12 +70,21 @@
             tmp = params.edges;// man's index
 
             {% for male in dataObj.maleList %}
-                {% if tmp == male.index %}
-                    tmp = {{ male.originalPreference }}
-                {% endif %}
+                tmp1 = {{ male.index |string }}
+                if (tmp1 == tmp) {
+                    tmp = 'M'+tmp1+' preferences'+{{male.originalPreference|tojson}};
+                    womanindex = {{ male.engaged |string }};
+                    {% for female in dataObj.femaleList %}
+                        tmp2 = {{ female.index |string }};
+                        if (tmp2 == womanindex){
+                            tmp3 = 'W'+womanindex+' preferences'+{{ female.originalPreference|tojson}};
+                        }
+                    {% endfor %}
+                }
             {% endfor %}
             document.getElementById("eventSpanContent").innerText = tmp;
 
+            document.getElementById("eventSpanContent2").innerText = tmp3;
         });
 
 
