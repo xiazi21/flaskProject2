@@ -190,11 +190,10 @@ def hello_world():  # put application's code here
     n = 1
     if request.method == 'GET':
         n = request.args.get('input1')
-        if n != None:
+        if n != None and n != '':
             n = int(n)
             result = []
             data1 = superMatchMain(n)
-
             if data1 == None:
                 return render_template("main.html", data=None, dataObj=data1)
             else:
@@ -203,7 +202,7 @@ def hello_world():  # put application's code here
                         result.append([male.index, ele])
                 return render_template("main.html", data=result, dataObj=data1)
         else:
-            return render_template("main.html", dataObj=None)
+            return render_template("main.html", dataObj=None, temp1=None)
     else:
         return render_template("main.html")
 

@@ -5,24 +5,25 @@
     <title>Super matching</title>
     <style type="text/css">
         #mynetwork {
-            width: 600px;
-            height: 400px;
+            width: 700px;
+            height: 500px;
             border: 1px solid lightgray;
         }
     </style>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 </head>
 <body>
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">Please input an int</a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="1-10" aria-label="Search" name="input1">
+            <input class="form-control mr-sm-2" type="search" placeholder="Enter an int" aria-label="Search"
+                   name="input1">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" name='btn1'>Submit</button>
         </form>
     </div>
 </nav>
+
 
 <div id="mynetwork"></div>
 <h2 id="eventSpanHeading"></h2>
@@ -35,11 +36,10 @@
     {% endfor %}
     <script>
         // create an array with nodes
-
         var nodes = new vis.DataSet([
             {% for ele in data %}
-                {id: {{ ele[0]|safe }}, label: "M" + {{ ele[0]|safe }}},
-                {id: {{ ele[1]|safe }}+10, label: "W" + {{ ele[1]|safe }}},
+                {id: {{ ele[0]|safe }}, label: "M" + {{ ele[0]|safe }}, x: 0},
+                {id: {{ ele[1]|safe }}+10, label: "W" + {{ ele[1]|safe }}, x: 500},
             {% endfor %}
         ]);
 
@@ -50,7 +50,6 @@
             {% endfor %}
         ]);
 
-
         // create a network
         var container = document.getElementById('mynetwork');
 
@@ -59,7 +58,26 @@
             nodes: nodes,
             edges: edges
         };
-        var options = {}
+
+        var options = {
+            physics: {
+                enabled: false,
+                barnesHut: {
+                    springConstant: 0,
+                    avoidOverlap: 0.2
+                }
+            },
+            layout: {
+                improvedLayout: true,
+                clusterThreshold: 100,
+                hierarchical: {
+                    levelSeparation: 600,
+                    nodeSpacing: 10,
+                    treeSpacing: 50,
+                    direction: 'LR'
+                }
+            }
+        }
 
         // initialize your network!
         var network = new vis.Network(container, data, options);
@@ -72,21 +90,19 @@
             {% for male in dataObj.maleList %}
                 tmp1 = {{ male.index |string }}
                 if (tmp1 == tmp) {
-                    tmp = 'M'+tmp1+' preferences'+{{male.originalPreference|tojson}};
+                    tmp = 'M' + tmp1 + ' preferences ' +{{male.originalPreference|tojson}};
                     womanindex = {{ male.engaged |string }};
                     {% for female in dataObj.femaleList %}
                         tmp2 = {{ female.index |string }};
-                        if (tmp2 == womanindex){
-                            tmp3 = 'W'+womanindex+' preferences'+{{ female.originalPreference|tojson}};
+                        if (tmp2 == womanindex) {
+                            tmp3 = 'W' + womanindex + ' preferences ' +{{ female.originalPreference|tojson}};
                         }
                     {% endfor %}
                 }
             {% endfor %}
             document.getElementById("eventSpanContent").innerText = tmp;
-
             document.getElementById("eventSpanContent2").innerText = tmp3;
         });
-
 
     </script>
 {% else %}
