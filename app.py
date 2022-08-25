@@ -27,6 +27,7 @@ class people:
         self.sex = sex  # male or female
         self.engaged = []  # engaged with who
         tmp = preferenceGen(num)
+        print(tmp)
         self.preference = tmp
         self.originalPreference = 'is ' + str(tmp)
 
@@ -46,9 +47,10 @@ class mainHelper:
 
     def someManEmpty(self):
         for male in self.maleList:
-            if male.preference == []:
+            if not male.preference:
                 return True
-        return False
+        else:
+            return False
 
     def propose(self, male, female):
         for man in self.maleList:
@@ -84,23 +86,23 @@ class mainHelper:
             if man == male:
                 for ele in male.preference:
                     if female.index in ele:
-                        male.preference[i].remove(female.index)
+                        man.preference[i].remove(female.index)
                     i += 1
-                if [None] in male.preference:
-                    male.preference.remove([None])
-                if [] in male.preference:
-                    male.preference.remove([])
+                if [None] in man.preference:
+                    man.preference.remove([None])
+                if [] in man.preference:
+                    man.preference.remove([])
         i = 0
         for woman in self.femaleList:
             if woman == female:
                 for ele in female.preference:
                     if male.index in ele:
-                        female.preference[i].remove(male.index)
+                        woman.preference[i].remove(male.index)
                     i += 1
-            if [None] in female.preference:
-                female.preference.remove([None])
-            if [] in female.preference:
-                female.preference.remove([])
+            if [None] in woman.preference:
+                woman.preference.remove([None])
+            if [] in woman.preference:
+                woman.preference.remove([])
 
     def isEveryoneEngaged(self):
         for man in self.maleList:
@@ -110,6 +112,13 @@ class mainHelper:
             if woman.engaged == []:
                 return False
         return True
+
+    def can_engage(self,man,woman):
+        if man.index in woman.preference:
+            if woman.index in man.preference:
+                return True
+        else:
+            return False
 
 
 def superMatchMain(num):
@@ -147,7 +156,18 @@ def superMatchMain(num):
                     # for the girls in mans' head
                     # m proposes, and becomes engaged, to w;
                     girl = object_local.findFemaleByIndex(girl)
-                    object_local.propose(man, girl)
+
+                    bol = 1
+                    for ele in girl.preference:
+                        if man.index in ele:
+                            for ele1 in man.preference:
+                                if girl.index in ele1:
+                                    bol = 0
+                    if bol == 0:
+                        object_local.propose(man, girl)
+
+
+
                     # for each strict successor m’ of m on w’s list do
                     i = 0  # counter
                     k = 0  # counter, get the rank in the girls preference
@@ -160,13 +180,18 @@ def superMatchMain(num):
                     # contain the man lower
                     for ele in mSuccessor:
                         for i in ele:
+                            male = object_local.findMaleByIndex(i)
                             if i in girl.engaged:
                                 # if the m’ is engaged to w then
-                                male = object_local.findMaleByIndex(i)
+                                #male = object_local.findMaleByIndex(i)
                                 object_local.breakEngaged(male, girl)
                                 # break the engagement;
                                 # delete the pair(m',w)
-                                object_local.deletePair(male, girl)
+                                #object_local.deletePair(male, girl)
+                            male = object_local.findMaleByIndex(i)
+                            object_local.deletePair(male, girl)
+        if object_local.someManEmpty():
+            return None
         multipleEngaged = []  # store the multiple engaged woman
         for female in object_local.femaleList:
             if len(female.engaged) > 1:
@@ -176,6 +201,9 @@ def superMatchMain(num):
             for maleIndex in woman.engaged:
                 male = object_local.findMaleByIndex(maleIndex)
                 object_local.breakEngaged(male, woman)
+                object_local.deletePair(male, woman)
+            for maleIndex in woman.preference[-1]:
+                male = object_local.findMaleByIndex(maleIndex)
                 object_local.deletePair(male, woman)
         if object_local.someManEmpty():
             return None
